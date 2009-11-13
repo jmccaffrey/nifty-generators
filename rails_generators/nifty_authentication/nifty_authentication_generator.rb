@@ -22,7 +22,7 @@ class NiftyAuthenticationGenerator < Rails::Generator::Base
       m.template "authlogic_session.rb", "app/models/#{user_singular_name}_session.rb" if options[:authlogic]
       m.template "users_controller.rb", "app/controllers/#{user_plural_name}_controller.rb"
       m.template "users_helper.rb", "app/helpers/#{user_plural_name}_helper.rb"
-      m.template "views/#{view_language}/signup.html.#{view_language}", "app/views/#{user_plural_name}/new.html.#{view_language}"
+      m.template "views/#{view_language}/#{semantic_prefix}signup.html.#{view_language}", "app/views/#{user_plural_name}/new.html.#{view_language}"
       
       m.directory "app/views/#{session_plural_name}"
       m.template "sessions_controller.rb", "app/controllers/#{session_plural_name}_controller.rb"
@@ -61,7 +61,9 @@ class NiftyAuthenticationGenerator < Rails::Generator::Base
       end
     end
   end
-  
+  def semantic_prefix
+    'semantic_' if options[:formtastic]
+  end
   def user_singular_name
     user_name.underscore
   end
@@ -101,7 +103,7 @@ class NiftyAuthenticationGenerator < Rails::Generator::Base
 protected
   
   def view_language
-    options[:haml] ? 'haml' : 'erb'
+    options[:haml] ? 'haml' : 'erb' 
   end
   
   def test_framework
@@ -115,6 +117,7 @@ protected
     opt.on("--rspec", "Use RSpec for test files.") { options[:test_framework] = :rspec }
     opt.on("--shoulda", "Use Shoulda for test files.") { options[:test_framework] = :shoulda }
     opt.on("--haml", "Generate HAML views instead of ERB.") { |v| options[:haml] = true }
+    opt.on("--formtastic", "Generate formtastic forms.") { |v| options[:formtastic] = true }
     opt.on("--authlogic", "Use Authlogic for authentication.") { |v| options[:authlogic] = true }
   end
   

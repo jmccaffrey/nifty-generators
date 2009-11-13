@@ -64,7 +64,7 @@ class NiftyScaffoldGenerator < Rails::Generator::Base
       
       unless options[:skip_controller]
         m.directory "app/controllers"
-        m.template "controller.rb", "app/controllers/#{plural_name}_controller.rb"
+        m.template "#{resource_controller_prefix}controller.rb", "app/controllers/#{plural_name}_controller.rb"
         
         m.directory "app/helpers"
         m.template "helper.rb", "app/helpers/#{plural_name}_helper.rb"
@@ -77,7 +77,7 @@ class NiftyScaffoldGenerator < Rails::Generator::Base
         end
       
         if form_partial?
-          m.template "views/#{view_language}/_form.html.#{view_language}", "app/views/#{plural_name}/_form.html.#{view_language}"
+          m.template "views/#{view_language}/_#{form_partial_name}.html.#{view_language}", "app/views/#{plural_name}/_#{form_partial_name}.html.#{view_language}"
         end
       
         m.route_resources plural_name
@@ -92,7 +92,9 @@ class NiftyScaffoldGenerator < Rails::Generator::Base
       end
     end
   end
-  
+  def resource_controller_prefix
+    "resource_" unless options[:no_resource_controller]
+  end
   def form_partial?
     actions? :new, :edit
   end
@@ -130,16 +132,22 @@ class NiftyScaffoldGenerator < Rails::Generator::Base
       read_template("#{dir_name}/#{action}.rb")
     end.join("  \n").strip
   end
-  
+  def form_partial_name
+    if options[:no_formtastic]
+      'form'
+    else
+      'semantic_form'
+    end
+  end
   def render_form
     if form_partial?
-      if options[:haml]
-        "= render :partial => 'form'"
-      else
-        "<%= render :partial => 'form' %>"
+      if options[:erb]
+        "<%= render :partial => '#{form_partial_name}' %>"
+      else  
+        "= render :partial => '#{form_partial_name}'"
       end
     else
-      read_template("views/#{view_language}/_form.html.#{view_language}")
+      read_template("views/#{view_language}/_#{form_partial_name}.html.#{view_language}")
     end
   end
   
@@ -188,7 +196,7 @@ class NiftyScaffoldGenerator < Rails::Generator::Base
 protected
   
   def view_language
-    options[:haml] ? 'haml' : 'erb'
+    options[:erb] ? 'erb' : 'haml'
   end
   
   def test_framework
@@ -207,10 +215,12 @@ protected
     opt.on("--skip-timestamps", "Don't add timestamps to migration file.") { |v| options[:skip_timestamps] = v }
     opt.on("--skip-controller", "Don't generate controller, helper, or views.") { |v| options[:skip_controller] = v }
     opt.on("--invert", "Generate all controller actions except these mentioned.") { |v| options[:invert] = v }
-    opt.on("--haml", "Generate HAML views instead of ERB.") { |v| options[:haml] = v }
+    opt.on("--erb", "Generate ERB views instead of HAML.") { |v| options[:erb] = v }
+    opt.on("--no-formtastic", "Generate normal forms instead of formtastic forms.") { |v| options[:no_formtastic] = v }
     opt.on("--testunit", "Use test/unit for test files.") { options[:test_framework] = :testunit }
     opt.on("--rspec", "Use RSpec for test files.") { options[:test_framework] = :rspec }
     opt.on("--shoulda", "Use Shoulda for test files.") { options[:test_framework] = :shoulda }
+    opt.on("--no-resource_controller", "Dont Use the resource_controller plugin.") { |v| options[:no_resource_controller] = v }
   end
   
   # is there a better way to do this? Perhaps with const_defined?
