@@ -93,7 +93,7 @@ class NiftyScaffoldGenerator < Rails::Generator::Base
     end
   end
   def resource_controller_prefix
-    "resource_" unless options[:no_resource_controller]
+    "resource_" if options[:resource_controller]
   end
   def form_partial?
     actions? :new, :edit
@@ -220,7 +220,7 @@ protected
     opt.on("--testunit", "Use test/unit for test files.") { options[:test_framework] = :testunit }
     opt.on("--rspec", "Use RSpec for test files.") { options[:test_framework] = :rspec }
     opt.on("--shoulda", "Use Shoulda for test files.") { options[:test_framework] = :shoulda }
-    opt.on("--no-resource_controller", "Dont Use the resource_controller plugin.") { |v| options[:no_resource_controller] = v }
+    opt.on("--resource_controller", "Dont Use the resource_controller plugin.") { |v| options[:resource_controller] = v }
   end
   
   # is there a better way to do this? Perhaps with const_defined?

@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 1.2") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ryan Bates"]
-  s.date = %q{2009-11-13}
+  s.date = %q{2009-11-17}
   s.description = %q{A collection of useful generator scripts for Rails.}
   s.email = %q{ryan (at) railscasts (dot) com}
   s.extra_rdoc_files = ["CHANGELOG", "LICENSE", "README.rdoc", "TODO", "lib/nifty_generators.rb", "tasks/deployment.rake"]
