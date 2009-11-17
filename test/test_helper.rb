@@ -21,6 +21,8 @@ unless File.exists? RAILS_ROOT
 end
 
 require 'rubygems'
+#gem 'rails', '2.2.2' # getting a Rails.configuration error with 2.1
+gem 'thoughtbot-shoulda', '2.0.6' # getting stack level too deep error on newer version
 require 'initializer'
 
 module Rails
